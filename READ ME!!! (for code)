@@ -1,0 +1,66 @@
+RP2040 MACRO PAD — CIRCUITPYTHON STARTER PACK
+============================================
+
+WHAT'S INCLUDED
+- code.py: CircuitPython firmware (renamed from main.py because CircuitPython runs code.py)
+- boot.py: enables the second USB CDC data serial interface
+- windows_companion.py: simple Windows app to choose mode and send media metadata
+- requirements.txt: Python packages for the Windows app
+
+IMPORTANT HARDWARE NOTE
+The GPIO numbers in code.py are PLACEHOLDERS. Earlier project discussion established:
+- RP2040 / Raspberry Pi Pico-style board with USB-C
+- 1.9-inch 8-pin ST7789 display
+- EC11 rotary encoder with push switch
+- four hot-swap key sockets
+- addressable RGB LEDs (exact type/count/voltage not yet verified)
+But the exact KiCad pin assignments were not confirmed. Edit the PIN CONFIGURATION
+section in code.py to match your actual schematic before connecting/powering the board.
+The display's width, height, rotation, rowstart/colstart and CS wiring may need adjustment.
+
+INSTALL ON THE PICO
+1. Install CircuitPython for your exact RP2040 board from circuitpython.org.
+2. Copy the CircuitPython library files/folders from the matching Adafruit CircuitPython
+   library bundle onto CIRCUITPY/lib:
+   - adafruit_st7789.mpy
+   - adafruit_display_text/ (folder)
+   - adafruit_hid/ (folder; often already included in the bundle)
+   - neopixel.mpy if using addressable LEDs
+3. Copy boot.py and code.py to the CIRCUITPY root.
+4. If your CircuitPython version already exposes USB CDC data, boot.py is still safe to use.
+5. Optional custom background: copy background.bmp to CIRCUITPY root. Make it exactly the
+   display's logical resolution after rotation (commonly 320x170 in landscape or 170x320
+   in portrait). The firmware loads it automatically; if absent, it uses a solid background.
+
+WINDOWS COMPANION
+1. Install Python 3.10+.
+2. Open Command Prompt in this folder and run:
+   py -m pip install -r requirements.txt
+3. Run:
+   py windows_companion.py
+4. Select the Pico's USB CDC data COM port and click Connect.
+5. Choose AUTO / SPOTIFY / YOUTUBE / OSU / CUSTOM.
+Windows media metadata depends on the app/browser publishing a Windows media session.
+
+DEFAULT BUTTON MAPPING (edit do_key() in code.py as desired)
+- K1: Spotify previous track; otherwise Left Arrow (YouTube seeks back 5 seconds)
+- K2: media Play/Pause; also sends K in browser mode
+- K3: Spotify next track; otherwise Right Arrow (YouTube seeks forward 5 seconds)
+- K4: Spotify next track; YouTube next video (Shift+N).
+
+IMPORTANT LIMITATIONS / NEXT STEPS
+- This is a configurable starter, not yet verified against your physical PCB.
+- USB media keys work independently of the Windows companion app, but the YouTube keyboard
+  shortcuts act on whichever app/window currently has keyboard focus. Click the video first.
+- YouTube's native J/L shortcuts seek 10 seconds; Left/Right Arrow seek 5 seconds when the
+  player is focused. K toggles play/pause.
+- The Windows companion currently sends media title/artist/app metadata. It does not yet
+  extract osu! beatmap difficulty or star rating. Those require a dedicated osu! data/log
+  integration, which must be added and tested against your installed osu! version.
+- Custom background support loads a BMP at the exact logical display resolution; it does not
+  resize/crop images. Confirm display rotation and dimensions first.
+- No app can guarantee YouTube metadata unless the browser exposes its media session to Windows.
+
+SAFETY
+Do not power LEDs from a GPIO pin. Confirm LED voltage, common ground and data-level
+requirements against the exact LED strip/module. Verify all pin assignments before use.
